@@ -1,0 +1,298 @@
+arm:
+  arm_1_joint_position_controller: {joint: arm_1_joint, required_drive_mode: 1, type: position_controllers/JointPositionController}
+  arm_1_joint_velocity_controller: {joint: arm_1_joint, required_drive_mode: 2, type: velocity_controllers/JointVelocityController}
+  arm_2_joint_position_controller: {joint: arm_2_joint, required_drive_mode: 1, type: position_controllers/JointPositionController}
+  arm_2_joint_velocity_controller: {joint: arm_2_joint, required_drive_mode: 2, type: velocity_controllers/JointVelocityController}
+  arm_3_joint_position_controller: {joint: arm_3_joint, required_drive_mode: 1, type: position_controllers/JointPositionController}
+  arm_3_joint_velocity_controller: {joint: arm_3_joint, required_drive_mode: 2, type: velocity_controllers/JointVelocityController}
+  arm_4_joint_position_controller: {joint: arm_4_joint, required_drive_mode: 1, type: position_controllers/JointPositionController}
+  arm_4_joint_velocity_controller: {joint: arm_4_joint, required_drive_mode: 2, type: velocity_controllers/JointVelocityController}
+  arm_5_joint_position_controller: {joint: arm_5_joint, required_drive_mode: 1, type: position_controllers/JointPositionController}
+  arm_5_joint_velocity_controller: {joint: arm_5_joint, required_drive_mode: 2, type: velocity_controllers/JointVelocityController}
+  arm_6_joint_position_controller: {joint: arm_6_joint, required_drive_mode: 1, type: position_controllers/JointPositionController}
+  arm_6_joint_velocity_controller: {joint: arm_6_joint, required_drive_mode: 2, type: velocity_controllers/JointVelocityController}
+  arm_7_joint_position_controller: {joint: arm_7_joint, required_drive_mode: 1, type: position_controllers/JointPositionController}
+  arm_7_joint_velocity_controller: {joint: arm_7_joint, required_drive_mode: 2, type: velocity_controllers/JointVelocityController}
+  joint_group_interpol_position_controller:
+    joints: [0, 0, 0, 0, 0, 0, 0]
+    required_drive_mode: 7
+    type: position_controllers/JointGroupPositionController
+  joint_group_position_controller:
+    joints: [arm_1_joint, arm_2_joint, arm_3_joint, arm_4_joint, arm_5_joint, arm_6_joint,
+      arm_7_joint]
+    required_drive_mode: 1
+    type: position_controllers/JointGroupPositionController
+  joint_group_velocity_controller:
+    joints: [arm_1_joint, arm_2_joint, arm_3_joint, arm_4_joint, arm_5_joint, arm_6_joint,
+      arm_7_joint]
+    required_drive_mode: 2
+    type: velocity_controllers/JointGroupVelocityController
+  joint_names: [arm_1_joint, arm_2_joint, arm_3_joint, arm_4_joint, arm_5_joint, arm_6_joint,
+    arm_7_joint]
+  joint_state_controller: {publish_rate: 50, type: joint_state_controller/JointStateController}
+  joint_trajectory_controller:
+    action_monitor_rate: 10
+    constraints:
+      arm_1_joint: {goal: 0.1, trajectory: 0.1}
+      arm_2_joint: {goal: 0.1, trajectory: 0.1}
+      arm_3_joint: {goal: 0.1, trajectory: 0.1}
+      arm_4_joint: {goal: 0.1, trajectory: 0.1}
+      arm_5_joint: {goal: 0.1, trajectory: 0.1}
+      arm_6_joint: {goal: 0.1, trajectory: 0.1}
+      arm_7_joint: {goal: 0.1, trajectory: 0.1}
+      goal_time: 0.6
+      stopped_velocity_tolerance: 0.05
+    joints: [arm_1_joint, arm_2_joint, arm_3_joint, arm_4_joint, arm_5_joint, arm_6_joint,
+      arm_7_joint]
+    required_drive_mode: 7
+    state_publish_rate: 25
+    stop_trajectory_duration: 0.5
+    type: position_controllers/JointTrajectoryController
+  max_command_silence: 0.5
+  robot_state_publisher: {publish_frequency: 50.0, tf_prefix: ''}
+command_gui:
+  command_gui_node_amir_VirtualBox16_12636_674552375395008422:
+    control_buttons:
+      group1:
+        buttons:
+        - [stop, stop]
+        - [init, init]
+        - [recover, recover]
+        - [halt, trigger, halt]
+        component_name: arm
+        group_name: arm settings
+      group2:
+        buttons:
+        - [stop, stop]
+        - [home, move, home]
+        - [folded, move, folded]
+        - [waveleft, move, waveleft]
+        - [waveright, move, waveright]
+        component_name: arm
+        group_name: arm pos
+      group3:
+        buttons:
+        - [stop, stop]
+        - [wave, move, wave]
+        component_name: arm
+        group_name: arm traj
+diagnostic_aggregator:
+  analyzers:
+    motors:
+      analyzers:
+        arm: {contains: arm_controller, path: Arm, type: diagnostic_aggregator/GenericAnalyzer}
+      path: Actuators
+      type: diagnostic_aggregator/AnalyzerGroup
+    simulation: {contains: joint, path: none, type: diagnostic_aggregator/DiscardAnalyzer}
+    simulation2: {contains: Controller, path: none, type: diagnostic_aggregator/DiscardAnalyzer}
+  base_path: ''
+  pub_rate: 1.0
+gazebo: {auto_disable_bodies: false, cfm: 0.0, contact_max_correcting_vel: 100.0,
+  contact_surface_layer: 0.001, erp: 0.2, gravity_x: 0.0, gravity_y: 0.0, gravity_z: -9.8,
+  max_contacts: 20, max_update_rate: 1000.0, sor_pgs_iters: 50, sor_pgs_precon_iters: 0,
+  sor_pgs_rms_error_tol: 0.0, sor_pgs_w: 1.3, time_step: 0.001}
+robot_description: "<?xml version=\"1.0\" ?>\n<!-- ===================================================================================\
+  \ -->\n<!-- |    This document was autogenerated by xacro from /home/amir/catkin_ws/src/taurob_arm_erl/taurob_schunk_lwa4d/urdf/schunk_lwa4d_standalone.urdf.xacro\
+  \ | -->\n<!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                \
+  \                 | -->\n<!-- ===================================================================================\
+  \ -->\n<robot name=\"lwa4d\" xmlns:xacro=\"http://www.ros.org/wiki/xacro\">\n  <material\
+  \ name=\"Schunk/LightGrey\">\n    <color rgba=\"0.7 0.7 0.7 1.0\"/>\n  </material>\n\
+  \  <material name=\"Schunk/DarkGrey\">\n    <color rgba=\"0.4 0.4 0.4 1.0\"/>\n\
+  \  </material>\n  <material name=\"Schunk/Black\">\n    <color rgba=\"0.0 0.0 0.0\
+  \ 1.0\"/>\n  </material>\n  <material name=\"Schunk/DarkGolden\">\n    <color rgba=\"\
+  0.4 0.4 0.3 1.0\"/>\n  </material>\n  <material name=\"Schunk/Blue\">\n    <color\
+  \ rgba=\"0.0 0.0 0.8 1.0\"/>\n  </material>\n  <!-- Used for fixing robot to Gazebo\
+  \ -->\n  <link name=\"world\"/>\n  <!-- joint between base_link and lwa4p_extended_connector_link\
+  \ -->\n  <joint name=\"arm_podest_joint\" type=\"fixed\">\n    <origin rpy=\"0 0\
+  \ 0\" xyz=\"0 0 0\"/>\n    <parent link=\"world\"/>\n    <child link=\"arm_podest_link\"\
+  />\n  </joint>\n  <link name=\"arm_podest_link\">\n    <inertial>\n      <mass value=\"\
+  0.01\"/>\n      <origin xyz=\"0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\"\
+  \ ixz=\"0.0\" iyy=\"0.001\" iyz=\"0.0\" izz=\"0.001\"/>\n    </inertial>\n    <visual>\n\
+  \      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_podest_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/LightGrey\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_podest_link.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <joint name=\"arm_base_joint\"\
+  \ type=\"fixed\">\n    <origin rpy=\"0 0 0\" xyz=\"0 0 0.140\"/>\n    <parent link=\"\
+  arm_podest_link\"/>\n    <child link=\"arm_base_link\"/>\n  </joint>\n  <link name=\"\
+  arm_base_link\">\n    <inertial>\n      <mass value=\"0.01\"/>\n      <origin xyz=\"\
+  0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\" iyy=\"0.001\" iyz=\"\
+  0.0\" izz=\"0.001\"/>\n    </inertial>\n  </link>\n  <!-- joint between arm_base_link\
+  \ and arm_1_link -->\n  <joint name=\"arm_1_joint\" type=\"revolute\">\n    <origin\
+  \ rpy=\"0 0 0\" xyz=\"0 0 0\"/>\n    <parent link=\"arm_base_link\"/>\n    <child\
+  \ link=\"arm_1_link\"/>\n    <axis xyz=\"0 0 -1\"/>\n    <limit effort=\"216\" lower=\"\
+  -3.12159265359\" upper=\"3.12159265359\" velocity=\"0.43633\"/>\n  </joint>\n  <link\
+  \ name=\"arm_1_link\">\n    <inertial>\n      <mass value=\"0.01\"/>\n      <origin\
+  \ xyz=\"0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\" iyy=\"0.001\"\
+  \ iyz=\"0.0\" izz=\"0.001\"/>\n    </inertial>\n    <!--\n      <xacro:cylinder_inertial\
+  \ radius=\"0.06\" length=\"0.150\" mass=\"3.6\">\n          <origin xyz=\"0 0 0.02\"\
+  \ rpy=\"0 0 0\"/>\n      </xacro:cylinder_inertial>\n-->\n    <visual>\n      <geometry>\n\
+  \        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_1_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/LightGrey\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_1_link.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <!-- joint between arm_1_link\
+  \ and arm_2_link -->\n  <joint name=\"arm_2_joint\" type=\"revolute\">\n    <origin\
+  \ rpy=\"-1.57079632679 -1.57079632679 0\" xyz=\"0 0 0.240\"/>\n    <parent link=\"\
+  arm_1_link\"/>\n    <child link=\"arm_2_link\"/>\n    <axis xyz=\"0 0 -1\"/>\n \
+  \   <limit effort=\"216\" lower=\"-2.12\" upper=\"2.12\" velocity=\"0.43633\"/>\n\
+  \  </joint>\n  <link name=\"arm_2_link\">\n    <inertial>\n      <mass value=\"\
+  0.01\"/>\n      <origin xyz=\"0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\"\
+  \ ixz=\"0.0\" iyy=\"0.001\" iyz=\"0.0\" izz=\"0.001\"/>\n    </inertial>\n    <!--\n\
+  \      <xacro:cylinder_inertial radius=\"0.06\" length=\"0.150\" mass=\"2.0\">\n\
+  \        <origin xyz=\"0 0 0\" rpy=\"0 0 0\"/>\n      </xacro:cylinder_inertial>\n\
+  -->\n    <visual>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_2_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/Black\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_2_link_collision.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <!-- joint between arm_2_link\
+  \ and arm_3_link -->\n  <joint name=\"arm_3_joint\" type=\"revolute\">\n    <origin\
+  \ rpy=\"1.57079632679 0 1.57079632679\" xyz=\"0 0 0\"/>\n    <parent link=\"arm_2_link\"\
+  />\n    <child link=\"arm_3_link\"/>\n    <axis xyz=\"0 0 -1\"/>\n    <limit effort=\"\
+  81.5\" lower=\"-3.12159265359\" upper=\"3.12159265359\" velocity=\"0.4189\"/>\n\
+  \  </joint>\n  <link name=\"arm_3_link\">\n    <inertial>\n      <mass value=\"\
+  0.01\"/>\n      <origin xyz=\"0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\"\
+  \ ixz=\"0.0\" iyy=\"0.001\" iyz=\"0.0\" izz=\"0.001\"/>\n    </inertial>\n    <!--\n\
+  \      <xacro:cylinder_inertial radius=\"0.06\" length=\"0.2\" mass=\"2.0\">\n \
+  \       <origin xyz=\"0.0 0 -0.2\" rpy=\"0 0 0\"/>\n      </xacro:cylinder_inertial>\n\
+  -->\n    <visual>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_3_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/LightGrey\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_3_link_collision.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <!-- joint between arm_3_link\
+  \ and arm_4_link -->\n  <joint name=\"arm_4_joint\" type=\"revolute\">\n    <origin\
+  \ rpy=\"-1.57079632679 -1.57079632679 0\" xyz=\"0 0 0.328\"/>\n    <parent link=\"\
+  arm_3_link\"/>\n    <child link=\"arm_4_link\"/>\n    <axis xyz=\"0 0 -1\"/>\n \
+  \   <limit effort=\"81.5\" lower=\"-2.16\" upper=\"2.16\" velocity=\"0.4189\"/>\n\
+  \  </joint>\n  <link name=\"arm_4_link\">\n    <inertial>\n      <mass value=\"\
+  0.01\"/>\n      <origin xyz=\"0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\"\
+  \ ixz=\"0.0\" iyy=\"0.001\" iyz=\"0.0\" izz=\"0.001\"/>\n    </inertial>\n    <!--\n\
+  \      <xacro:cylinder_inertial radius=\"0.06\" length=\"0.150\" mass=\"1.2\">\n\
+  \        <origin xyz=\"0 0 0\" rpy=\"0 0 0\"/>\n      </xacro:cylinder_inertial>\n\
+  -->\n    <visual>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_4_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/Black\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_4_link_collision.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <!-- joint between arm_4_link\
+  \ and arm_5_link -->\n  <joint name=\"arm_5_joint\" type=\"revolute\">\n    <origin\
+  \ rpy=\"1.57079632679 0 1.57079632679\" xyz=\"0 0 0\"/>\n    <parent link=\"arm_4_link\"\
+  />\n    <child link=\"arm_5_link\"/>\n    <axis xyz=\"0 0 -1\"/>\n    <limit effort=\"\
+  20.7\" lower=\"-3.12159265359\" upper=\"3.12159265359\" velocity=\"0.43633\"/>\n\
+  \  </joint>\n  <link name=\"arm_5_link\">\n    <inertial>\n      <mass value=\"\
+  0.01\"/>\n      <origin xyz=\"0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\"\
+  \ ixz=\"0.0\" iyy=\"0.001\" iyz=\"0.0\" izz=\"0.001\"/>\n    </inertial>\n    <!--\n\
+  \      <xacro:cylinder_inertial radius=\"0.06\" length=\"0.15\" mass=\"1.2\">\n\
+  \        <origin xyz=\"0 0 -0.18\" rpy=\"0 0 0\"/>\n      </xacro:cylinder_inertial>\n\
+  -->\n    <visual>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_5_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/LightGrey\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_5_link_collision.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <!-- joint between arm_5_link\
+  \ and arm_6_link -->\n  <joint name=\"arm_6_joint\" type=\"revolute\">\n    <origin\
+  \ rpy=\"-1.57079632679 -1.57079632679 0\" xyz=\"0 0 0.323\"/>\n    <parent link=\"\
+  arm_5_link\"/>\n    <child link=\"arm_6_link\"/>\n    <axis xyz=\"0 0 1\"/>\n  \
+  \  <limit effort=\"15\" lower=\"-2.07\" upper=\"2.07\" velocity=\"1.2566\"/>\n \
+  \ </joint>\n  <link name=\"arm_6_link\">\n    <inertial>\n      <mass value=\"0.01\"\
+  />\n      <origin xyz=\"0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"\
+  0.0\" iyy=\"0.001\" iyz=\"0.0\" izz=\"0.001\"/>\n    </inertial>\n    <!--\n   \
+  \   <xacro:sphere_inertial radius=\"0.05\" mass=\"1.9\">\n        <origin xyz=\"\
+  0 0 0\" rpy=\"0 0 0\"/>\n      </xacro:sphere_inertial>\n-->\n    <visual>\n   \
+  \   <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_6_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/Black\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_6_link_collision.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <!-- joint between arm_6_link\
+  \ and arm_7_link -->\n  <joint name=\"arm_7_joint\" type=\"revolute\">\n    <origin\
+  \ rpy=\"1.57079632679 0 1.57079632679\" xyz=\"0 0 0\"/>\n    <parent link=\"arm_6_link\"\
+  />\n    <child link=\"arm_7_link\"/>\n    <axis xyz=\"0 0 1\"/>\n    <limit effort=\"\
+  15\" lower=\"-2.94\" upper=\"2.94\" velocity=\"1.2566\"/>\n  </joint>\n  <link name=\"\
+  arm_7_link\">\n    <inertial>\n      <mass value=\"0.01\"/>\n      <origin xyz=\"\
+  0 0 0\"/>\n      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\" iyy=\"0.001\" iyz=\"\
+  0.0\" izz=\"0.001\"/>\n    </inertial>\n    <!--\n      <xacro:cylinder_inertial\
+  \ radius=\"0.03\" length=\"0.035\" mass=\"0.05\">\n        <origin xyz=\"0 0 0.06\"\
+  \ rpy=\"0 0 0\"/>\n      </xacro:cylinder_inertial>\n-->\n    <visual>\n      <geometry>\n\
+  \        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_7_link.stl\"\
+  />\n      </geometry>\n      <material name=\"Schunk/LightGrey\"/>\n    </visual>\n\
+  \    <collision>\n      <geometry>\n        <mesh filename=\"package://taurob_schunk_lwa4d/meshes/lwa4d/arm_7_link.stl\"\
+  />\n      </geometry>\n    </collision>\n  </link>\n  <joint name=\"arm_ee_joint\"\
+  \ type=\"fixed\">\n    <origin rpy=\"0 0 0\" xyz=\"0 0 0.0824\"/>\n    <parent link=\"\
+  arm_7_link\"/>\n    <child link=\"arm_ee_link\"/>\n  </joint>\n  <link name=\"arm_ee_link\"\
+  >\n    <inertial>\n      <mass value=\"0.01\"/>\n      <origin xyz=\"0 0 0\"/>\n\
+  \      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\" iyy=\"0.001\" iyz=\"0.0\"\
+  \ izz=\"0.001\"/>\n    </inertial>\n  </link>\n  <gazebo reference=\"arm_base_link\"\
+  >\n    <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/Black\"/>\n  </gazebo>\n  <gazebo reference=\"arm_1_link\">\n \
+  \   <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/LightGrey\"/>\n  </gazebo>\n  <gazebo reference=\"arm_2_link\"\
+  >\n    <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/Black\"/>\n  </gazebo>\n  <gazebo reference=\"arm_3_link\">\n \
+  \   <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/LightGrey\"/>\n  </gazebo>\n  <gazebo reference=\"arm_4_link\"\
+  >\n    <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/Black\"/>\n  </gazebo>\n  <gazebo reference=\"arm_5_link\">\n \
+  \   <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/LightGrey\"/>\n  </gazebo>\n  <gazebo reference=\"arm_6_link\"\
+  >\n    <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/Black\"/>\n  </gazebo>\n  <gazebo reference=\"arm_7_link\">\n \
+  \   <gravity>true</gravity>\n    <self_collide>false</self_collide>\n    <material\
+  \ value=\"Schunk/LightGrey\"/>\n  </gazebo>\n  <transmission name=\"arm_1_trans\"\
+  >\n    <type>transmission_interface/SimpleTransmission</type>\n    <joint name=\"\
+  arm_1_joint\">\n      <hardwareInterface>PositionJointInterface</hardwareInterface>\n\
+  \      <hardwareInterface>VelocityJointInterface</hardwareInterface>\n      <!--hardwareInterface>EffortJointInterface</hardwareInterface-->\n\
+  \    </joint>\n    <actuator name=\"arm_1_motor\">\n      <mechanicalReduction>1</mechanicalReduction>\n\
+  \    </actuator>\n  </transmission>\n  <transmission name=\"arm_2_trans\">\n   \
+  \ <type>transmission_interface/SimpleTransmission</type>\n    <joint name=\"arm_2_joint\"\
+  >\n      <hardwareInterface>PositionJointInterface</hardwareInterface>\n      <hardwareInterface>VelocityJointInterface</hardwareInterface>\n\
+  \      <!--hardwareInterface>EffortJointInterface</hardwareInterface-->\n    </joint>\n\
+  \    <actuator name=\"arm_2_motor\">\n      <mechanicalReduction>1</mechanicalReduction>\n\
+  \    </actuator>\n  </transmission>\n  <transmission name=\"arm_3_trans\">\n   \
+  \ <type>transmission_interface/SimpleTransmission</type>\n    <joint name=\"arm_3_joint\"\
+  >\n      <hardwareInterface>PositionJointInterface</hardwareInterface>\n      <hardwareInterface>VelocityJointInterface</hardwareInterface>\n\
+  \      <!--hardwareInterface>EffortJointInterface</hardwareInterface-->\n    </joint>\n\
+  \    <actuator name=\"arm_3_motor\">\n      <mechanicalReduction>1</mechanicalReduction>\n\
+  \    </actuator>\n  </transmission>\n  <transmission name=\"arm_4_trans\">\n   \
+  \ <type>transmission_interface/SimpleTransmission</type>\n    <joint name=\"arm_4_joint\"\
+  >\n      <hardwareInterface>PositionJointInterface</hardwareInterface>\n      <hardwareInterface>VelocityJointInterface</hardwareInterface>\n\
+  \      <!--hardwareInterface>EffortJointInterface</hardwareInterface-->\n    </joint>\n\
+  \    <actuator name=\"arm_4_motor\">\n      <mechanicalReduction>1</mechanicalReduction>\n\
+  \    </actuator>\n  </transmission>\n  <transmission name=\"arm_5_trans\">\n   \
+  \ <type>transmission_interface/SimpleTransmission</type>\n    <joint name=\"arm_5_joint\"\
+  >\n      <hardwareInterface>PositionJointInterface</hardwareInterface>\n      <hardwareInterface>VelocityJointInterface</hardwareInterface>\n\
+  \      <!--hardwareInterface>EffortJointInterface</hardwareInterface-->\n    </joint>\n\
+  \    <actuator name=\"arm_5_motor\">\n      <mechanicalReduction>1</mechanicalReduction>\n\
+  \    </actuator>\n  </transmission>\n  <transmission name=\"arm_6_trans\">\n   \
+  \ <type>transmission_interface/SimpleTransmission</type>\n    <joint name=\"arm_6_joint\"\
+  >\n      <hardwareInterface>PositionJointInterface</hardwareInterface>\n      <hardwareInterface>VelocityJointInterface</hardwareInterface>\n\
+  \      <!--hardwareInterface>EffortJointInterface</hardwareInterface-->\n    </joint>\n\
+  \    <actuator name=\"arm_6_motor\">\n      <mechanicalReduction>1</mechanicalReduction>\n\
+  \    </actuator>\n  </transmission>\n  <transmission name=\"arm_7_trans\">\n   \
+  \ <type>transmission_interface/SimpleTransmission</type>\n    <joint name=\"arm_7_joint\"\
+  >\n      <hardwareInterface>PositionJointInterface</hardwareInterface>\n      <hardwareInterface>VelocityJointInterface</hardwareInterface>\n\
+  \      <!--hardwareInterface>EffortJointInterface</hardwareInterface-->\n    </joint>\n\
+  \    <actuator name=\"arm_7_motor\">\n      <mechanicalReduction>1</mechanicalReduction>\n\
+  \    </actuator>\n  </transmission>\n  <!-- ros_control plugin -->\n  <gazebo>\n\
+  \    <plugin filename=\"libhwi_switch_gazebo_ros_control.so\" name=\"ros_control\"\
+  >\n      <robotNamespace>arm</robotNamespace>\n      <filterJointsParam>joint_names</filterJointsParam>\n\
+  \    </plugin>\n  </gazebo>\n</robot>\n\n"
+rosdistro: 'kinetic
+
+  '
+roslaunch:
+  uris: {host_amir_virtualbox16__44265: 'http://amir-VirtualBox16:44265/', host_amir_virtualbox16__45913: 'http://amir-VirtualBox16:45913/'}
+rosversion: '1.12.13
+
+  '
+run_id: ff8efaaa-6ee1-11e8-bd6d-0800271cb9cb
+script_server:
+  arm:
+    action_name: /arm/joint_trajectory_controller/follow_joint_trajectory
+    default_vel: 0.3
+    folded:
+    - [0.0, -0.7462504282752155, -0.5695882013883494, -1.0179807395182126, 0.03600614246864302,
+      0.49300315381083826, 0.0]
+    home:
+    - [0, 1.57, -0.07759733854366789, 0, 0, 0, 0]
+    joint_names: [arm_1_joint, arm_2_joint, arm_3_joint, arm_4_joint, arm_5_joint,
+      arm_6_joint, arm_7_joint]
+    service_ns: /arm/driver
+    wave: [waveleft, waveright, home]
+    waveleft:
+    - [0.0, 0.321033880484058, 0.49950722659008573, -0.4061025056033145, -0.2370251233291425,
+      5.300248440143207e-06, 9.462633828505318e-06]
+    waveright:
+    - [0.0, 0.4741062629069983, -0.7912476227793528, 0.0041526706870680385, -2.4662076334003302e-05,
+      2.4489075676648042e-05, 8.393716051102729e-06]
+use_sim_time: true

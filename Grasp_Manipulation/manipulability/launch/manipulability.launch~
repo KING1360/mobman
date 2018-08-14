@@ -1,0 +1,13 @@
+
+<launch>
+
+  <!-- send lwa4d urdf to param server -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find erl_lwa4d)/urdf/schunk_lwa4d_standalone.urdf.xacro'" />
+
+
+  <!-- <node pkg="manipulability" type="manip" name="M1" /> -->
+
+  <node name="T1" pkg="beginner_tutorials" type="talker" />
+
+  <!-- <node name="listen" pkg="beginner_tutorials" type="talker" /> -->
+</launch>
