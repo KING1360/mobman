@@ -35,9 +35,44 @@ using namespace Eigen;
 
 class PG_obj {
     int width, height;
+    KDL::Jacobian Jacob;
   public:
     void set_values (int,int);
+    int area() {return width*height;}    
+    void manip(KDL::Jacobian);
+};
+
+
+void PG_obj::set_values (int x, int y) {
+  width = x;
+  height = y;
+}
+
+void PG_obj::manip (KDL::Jacobian J){
+  std::cout << "\n No. of rows of Jacobian IS= \n"<<J.rows() << "\n No. of columns of Jacobian IS= \n"<<J.columns() << ";\n \n"<<std::endl;
+  MatrixXd JJ_T =   J.data * J.data.transpose();
+  EigenSolver<MatrixXd> es(JJ_T);
+
+  //float ee = es.eigenvalues()(0);
+
+  //VectorXd v1 = es.eigenvalues().col(0);
+  std::cout << "\n  J J'  = \n"<< JJ_T<<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvectors().col(0) <<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvalues().col(0)(0).real() <<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvalues() <<std::endl;
+  // float ev=es.eigenvalues();
+  // return ev;
+}
+
+
+/*
+class PG_obj {
+    int width, height;
+    KDL::Jacobian J;
+  public:
+    void set_values (int,int, KDL::Jacobian);
     int area() {return width*height;}
+    void manip();
 };
 
 void PG_obj::set_values (int x, int y) {
@@ -45,19 +80,27 @@ void PG_obj::set_values (int x, int y) {
   height = y;
 }
 
+void PG_obj::manip (KDL::Jacobian Jacob){
+  J = Jacob;
+  std::cout << "\n No. of rows of Jacobian = \n"<<J.rows() << "\n No. of columns of Jacobian = \n"<<J.columns() << ";\n \n"<<std::endl;
+  // MatrixXd JJ_T =   J.data * J.data.transpose();
+  // EigenSolver<MatrixXd> es(JJ_T);
+  // double ev[] = es.eigenvalues();
+  // return ev;
+}
+*/
+
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "manip");
   ros::NodeHandle n;
 
   ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-  ros::Publisher joint_msg_pub = n.advertise<sensor_msgs::JointState>("leg_joints_states", 1);
 
   ros::Rate loop_rate(10);
  
   std::string robot_desc_string;
-  sensor_msgs::JointState joint_msg;
-  //n.param("robot_description", robot_desc_string, std::string());
 
 
 
@@ -81,8 +124,10 @@ int main(int argc, char **argv)
     ROS_INFO("Got the tree!");
   }
   KDL::Chain chain, chain_ee_b;
-  float myinput;
-  scanf ("%e",&myinput);
+  // float myinput;
+  // scanf ("%e",&myinput);
+
+
 
 //=======================================================
   cout << "What's your name?\n ";
@@ -132,6 +177,13 @@ int main(int argc, char **argv)
   jsolver.JntToJac(jointpositions, J);
   std::cout << "\n No. of rows of Jacobian = \n"<<J.rows() << "\n No. of columns of Jacobian = \n"<<J.columns() << ";\n \n"<<std::endl;
    
+
+
+
+  PG_obj obj1;
+  obj1.set_values(1,2);
+  obj1.manip(J);
+  cout << "rect area: " << obj1.area() << endl;
 
   // int m = 20; 
   // MatrixXf jointpos(nj, m);
