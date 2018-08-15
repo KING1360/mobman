@@ -57,8 +57,8 @@ void PG_obj::manip (KDL::Jacobian J){
 
   //VectorXd v1 = es.eigenvalues().col(0);
   std::cout << "\n  J J'  = \n"<< JJ_T<<std::endl;
-  std::cout << "\n EigenValue  = \n"<< es.eigenvectors().col(0) <<std::endl;
-  std::cout << "\n EigenValue  = \n"<< es.eigenvalues().col(0)(0).real() <<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvectors().(0) <<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvalues().col(0).real() <<std::endl;
   std::cout << "\n EigenValue  = \n"<< es.eigenvalues() <<std::endl;
   // float ev=es.eigenvalues();
   // return ev;
