@@ -34,61 +34,52 @@ using namespace Eigen;
 
 
 class PG_obj {
-    int width, height;
     KDL::Jacobian Jacob;
   public:
-    void set_values (int,int);
-    int area() {return width*height;}    
-    void manip(KDL::Jacobian);
+    float manip(KDL::Jacobian);
 };
 
 
-void PG_obj::set_values (int x, int y) {
-  width = x;
-  height = y;
-}
-
-void PG_obj::manip (KDL::Jacobian J){
-  std::cout << "\n No. of rows of Jacobian IS= \n"<<J.rows() << "\n No. of columns of Jacobian IS= \n"<<J.columns() << ";\n \n"<<std::endl;
+float PG_obj::manip (KDL::Jacobian J){
+  // std::cout << "\n No. of rows of Jacobian IS= \n"<<J.rows() << "\n No. of columns of Jacobian IS= \n"<<J.columns() << ";\n \n"<<std::endl;
   MatrixXd JJ_T =   J.data * J.data.transpose();
   EigenSolver<MatrixXd> es(JJ_T);
 
-  //float ee = es.eigenvalues()(0);
-
-  //VectorXd v1 = es.eigenvalues().col(0);
+  /*
   std::cout << "\n  J J'  = \n"<< JJ_T<<std::endl;
   std::cout << "\n EigenValue  = \n"<< es.eigenvectors().col(0) <<std::endl;
-  std::cout << "\n EigenValue  = \n"<< es.eigenvalues().col(0).real() <<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvalues().col(0)(0).real() <<std::endl;
   std::cout << "\n EigenValue  = \n"<< es.eigenvalues().real() <<std::endl;
-  // float ev=es.eigenvalues();
-  // return ev;
+  */
+
+
+  VectorXd eval = es.eigenvalues().col(0).real();
+  float evp = eval.transpose()*eval;
+  // std::cout << "\n EIGEN PRODUCT  = \n"<< eval.size() <<std::endl;
+  
+  float m = 0;
+  Eigen::VectorXd ones(6);
+  ones[0] = 1;
+  ones[1] = 1;
+  ones(2) = 1;
+  ones(3) = 1;
+  ones(4) = 1;
+  ones(5) = 1;
+  // std::cout << "\n ONES  = \n"<<  ones <<std::endl;
+  for(unsigned int i=0;i<eval.size();i++){
+    m =    eval(i)  * abs( ones.transpose() * es.eigenvectors().col(i).real() );
+    /*
+    std::cout << "\n EIGEN PRODUCT  = \n"<<  es.eigenvectors().col(i).real().transpose() * es.eigenvectors().col(i).real() <<std::endl;
+    std::cout << "\n ABS EIGEN SUM  = \n"<<  abs( ones.transpose() * es.eigenvectors().col(i).real() ) <<std::endl;
+    std::cout << "\n EIGEN SUM  = \n"<<  ( ones.transpose() * es.eigenvectors().col(i).real() ) <<std::endl;
+    std::cout << "\n Manipuilability  = \n"<<  m <<std::endl;
+    */
+  }
+  return m;
 }
 
 
-/*
-class PG_obj {
-    int width, height;
-    KDL::Jacobian J;
-  public:
-    void set_values (int,int, KDL::Jacobian);
-    int area() {return width*height;}
-    void manip();
-};
 
-void PG_obj::set_values (int x, int y) {
-  width = x;
-  height = y;
-}
-
-void PG_obj::manip (KDL::Jacobian Jacob){
-  J = Jacob;
-  std::cout << "\n No. of rows of Jacobian = \n"<<J.rows() << "\n No. of columns of Jacobian = \n"<<J.columns() << ";\n \n"<<std::endl;
-  // MatrixXd JJ_T =   J.data * J.data.transpose();
-  // EigenSolver<MatrixXd> es(JJ_T);
-  // double ev[] = es.eigenvalues();
-  // return ev;
-}
-*/
 
 
 int main(int argc, char **argv)
@@ -181,9 +172,8 @@ int main(int argc, char **argv)
 
 
   PG_obj obj1;
-  obj1.set_values(1,2);
   obj1.manip(J);
-  cout << "rect area: " << obj1.area() << endl;
+  cout << "Manipuilability: " << obj1.manip(J) << endl;
 
   // int m = 20; 
   // MatrixXf jointpos(nj, m);
@@ -214,9 +204,11 @@ int main(int argc, char **argv)
 
   EigenSolver<MatrixXd> es(JJ_T);
 
+  /*
   std::cout << "\n  J J'  = \n"<< JJ_T<<std::endl;
   std::cout << "\n EigenValue  = \n"<< es.eigenvectors() <<std::endl;
   std::cout << "\n EigenValue  = \n"<< es.eigenvalues() <<std::endl;
+  */
 
 
 // Create solver based on kinematic chain
@@ -234,10 +226,19 @@ JntArray q_init(chain.getNrOfJoints());
 
 //Set destination frame
 Rotation r = Rotation::Identity();
-Vector v(-0.2,    0.275989,    0.398982);
-Frame F_dest(r, v);
- 
-int ret = iksolver1.CartToJnt(q_init,F_dest,q);
+
+for(unsigned int i=0;i<nj;i++){
+  float x =0.2 + (i * 0.10);
+  Vector v( x,    0.275989,    0.398982);
+  Frame F_dest(r, v);
+  int ret = iksolver1.CartToJnt(q_init,F_dest,q);
+  std::cout << "\n This is EE = \n"<<  v << std::endl;
+  std::cout << "\n This is Joint Positions = \n" <<  q.operator()(0) << ","<<  q.operator()(1) << ","<<  q.operator()(2) << ","<<  q.operator()(3) << ","<<  q.operator()(4) << "," <<  q.operator()(5) << ","<<  q.operator()(6) <<";\n \n"<<std::endl; 
+  jsolver.JntToJac(q, J);
+  float m = obj1.manip(J);
+  std::cout << "\n This is MANIPULABILITY = \n"<<m << std::endl;
+}
+
 
 // KDL::ChainIkSolverPos_NR_JL ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, fk_solver, vik_solver, int num_iterations, double error);
 
