@@ -1,14 +1,10 @@
-#include <ros/ros.h>
-#include "std_msgs/String.h"
-#include <std_msgs/Float32.h>
 
-#include "std_msgs/MultiArrayLayout.h"
-#include "std_msgs/MultiArrayDimension.h"
+#include "ros/ros.h"
+#include "manipulability/Man_service.h"
+#include <geometry_msgs/Pose.h>
+#include "manipulability/AddTwoInt.h"
 
-#include "std_msgs/Float32MultiArray.h"
-#include <math.h>
 
-#include <boost/scoped_ptr.hpp>
 #include <kdl/chain.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -16,28 +12,32 @@
 #include <kdl/jacobian.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl_parser/kdl_parser.hpp>
-#include <sensor_msgs/JointState.h>
+
+
 #include <kdl/chainfksolver.hpp>
 #include <kdl/frames_io.hpp>
 
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_nr.hpp>
-
+#include <kdl/chainiksolvervel_pinv.hpp>
 #include <stdio.h>
 #include <iostream>
 #include <Eigen/LU>
 #include <Eigen/Dense>
 
-#include <sstream>
+#include <math.h>
 
-#include <iostream>
 using namespace std;
 using namespace KDL;
 using namespace Eigen;
-#include <trac_ik/trac_ik.hpp>
 
 
+
+
+
+KDL::Chain chain;
+KDL::Tree my_tree;
 
 class PG_obj {
     KDL::Jacobian Jacob;
@@ -51,12 +51,7 @@ float PG_obj::manip (KDL::Jacobian J){
   MatrixXd JJ_T =   J.data * J.data.transpose();
   EigenSolver<MatrixXd> es(JJ_T);
 
-  /*
-  std::cout << "\n  J J'  = \n"<< JJ_T<<std::endl;
-  std::cout << "\n EigenValue  = \n"<< es.eigenvectors().col(0) <<std::endl;
-  std::cout << "\n EigenValue  = \n"<< es.eigenvalues().col(0)(0).real() <<std::endl;
-  std::cout << "\n EigenValue  = \n"<< es.eigenvalues().real() <<std::endl;
-  */
+
 
 
   VectorXd eval = es.eigenvalues().col(0).real();
@@ -74,30 +69,60 @@ float PG_obj::manip (KDL::Jacobian J){
   // std::cout << "\n ONES  = \n"<<  ones <<std::endl;
   for(unsigned int i=0;i<eval.size();i++){
     m =    eval(i)  * abs( ones.transpose() * es.eigenvectors().col(i).real() );
-    /*
-    std::cout << "\n EIGEN PRODUCT  = \n"<<  es.eigenvectors().col(i).real().transpose() * es.eigenvectors().col(i).real() <<std::endl;
-    std::cout << "\n ABS EIGEN SUM  = \n"<<  abs( ones.transpose() * es.eigenvectors().col(i).real() ) <<std::endl;
-    std::cout << "\n EIGEN SUM  = \n"<<  ( ones.transpose() * es.eigenvectors().col(i).real() ) <<std::endl;
-    std::cout << "\n Manipuilability  = \n"<<  m <<std::endl;
-    */
+
   }
   return m;
+}
+
+bool manip1(manipulability::Man_service::Request  &request,
+            manipulability::Man_service::Response &res)
+{
+  res.pose_back.position.x   =request.pose.position.x +0.25;
+  res.pose_back.position.y   =request.pose.position.y+ 0.25;
+  res.pose_back.position.z   =request.pose.position.z;
+  res.pose_back.orientation.x=request.pose.orientation.x;
+  res.pose_back.orientation.y=request.pose.orientation.y;
+  res.pose_back.orientation.z=request.pose.orientation.z;
+  res.pose_back.orientation.w=request.pose.orientation.w;
+  //std::cout<<"A="<<req.a<<"; B="<<req.b<<"; This is the computed value:"<<res.sum<<std::endl;
+  //ROS_INFO("request: x=%ld, y=%ld", (int)req.a, (int)req.b);
+  //ROS_INFO("SSending back response: [%ld]", (float)res.sum);
+
+  my_tree.getChain("arm_base_link", "arm_ee_link", chain);
+  JntArray q(chain.getNrOfJoints());
+  KDL::Jacobian Jac;
+  KDL::ChainJntToJacSolver jsolver(chain);
+  PG_obj obj1;
+
+  jsolver.JntToJac(q, Jac);
+  float m = obj1.manip(Jac);
+  std::cout << "\n This is MANIPULABILITY = \n"<<m << std::endl;  
+  return true;
 }
 
 
 
 
+bool add(manipulability::AddTwoInt::Request  &req,
+         manipulability::AddTwoInt::Response &res)
+{
+  res.sum = 1;//req.a * req.b ;
+  std::cout<<"A="<<req.a<<"; B="<<req.b<<"; This is the computed value:"<<res.sum<<std::endl;
+  ROS_INFO("request: x=%ld, y=%ld", (int)req.a, (int)req.b);
+  //ROS_INFO("SSending back response: [%ld]", (float)res.sum);
+  return true;
+}
+
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "manip");
+  ros::init(argc, argv, "add_two_ints_server");
   ros::NodeHandle n;
 
-  //ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-  ros::Publisher chatter_pub = n.advertise<std_msgs::Float32MultiArray>("Topic_Array", 100);
 
-  ros::Rate loop_rate(10);
- 
+
+
+
   std::string robot_desc_string;
 
 
@@ -189,8 +214,8 @@ int main(int argc, char **argv)
   EigenSolver<MatrixXd> es(JJ_T);
 
 
-ChainFkSolverPos_recursive fksolver1(chain);//Forward position solver
-ChainIkSolverVel_pinv iksolver1v(chain);//Inverse velocity solver
+KDL::ChainFkSolverPos_recursive fksolver1(chain);//Forward position solver
+KDL::ChainIkSolverVel_pinv iksolver1v(chain);//Inverse velocity solver
 ChainIkSolverPos_NR iksolver1(chain,fksolver1,iksolver1v,100,1e-6);//Maximum 100 iterations, stop at accuracy 1e-6
  
  //Creation of jntarrays:
@@ -219,54 +244,46 @@ fksolver1.JntToCart(jointpositions,position1);
 std::cout << "\n position1  = \n"<< position1<<std::endl;
 std::cout << "\n q  = \n"<< q(0,3) <<std::endl;
 
-  while (ros::ok())
-  {
-    std_msgs::Float32MultiArray array;
-    //Clear array
-    array.data.clear();
-    //for loop, pushing data in the size of the array
-    for (int i = 0; i < chain.getNrOfJoints(); i++)
-    {
-      //assign array a random number between 0 and 255.
-      //array.data.push_back( (rand() % 255) + 0.1 );
-      array.data.push_back(q.operator()(i));
-    }
-    //Publish array
-    chatter_pub.publish(array);
-    //Let the world know
-    ROS_INFO("I published something!");
-    std::cout << "I received = " << std::endl << array<< std::endl;
-    //Do this.
-    ros::spinOnce();
-    //Added a delay so not to spam
-    sleep(2);
-  }
 
-  //std::cout << "\n This is TEST = \n"<<mat.data[0] << ", "<<mat.data[1]<<", "<<mat.data[2]<<", "<<mat.data[3]<<", "<<mat.data[4]<<", "<<mat.data[5]<<", "<<mat.data[6]<< std::endl;
 
-  int count = 0;
-  //chatter_pub.publish(mat);
 
-/*
-  while (ros::ok())
-  {
-    std_msgs::String msg;
 
-    std::stringstream ss;
-    ss << "hello world "<<count;
-    //msg.data = ss.str();
-    msg.data = ss.str();
-
-    ROS_INFO("%s", msg.data.c_str());
-    chatter_pub.publish(msg);
-    //joint_msg_pub.publish(joint_pos);
-
-    ros::spinOnce();
-
-    loop_rate.sleep();
-    ++count;
-  }
-*/
+  ros::ServiceServer service = n.advertiseService("add_two_ints", manip1);
+  ROS_INFO("Ready to add two numbers.");
+  ros::spin();
 
   return 0;
 }
+
+
+
+
+
+/*
+
+#include "ros/ros.h"
+#include "manipulability/AddTwoInt.h"
+
+bool add(manipulability::AddTwoInt::Request  &req,
+         manipulability::AddTwoInt::Response &res)
+{
+  res.sum = req.a * req.b;
+  std::cout<<"A="<<req.a<<"; B="<<req.b<<"; This is the computed value:"<<res.sum<<std::endl;
+  //ROS_INFO("request: x=%ld, y=%ld", (int)req.a, (int)req.b);
+  //ROS_INFO("SSending back response: [%ld]", (float)res.sum);
+  return true;
+}
+
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "add_two_ints_server");
+  ros::NodeHandle n;
+
+  ros::ServiceServer service = n.advertiseService("add_two_ints", add);
+  ROS_INFO("Ready to add two numbers.");
+  ros::spin();
+
+  return 0;
+}
+
+*/

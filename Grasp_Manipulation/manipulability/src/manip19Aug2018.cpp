@@ -1,11 +1,5 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include <std_msgs/Float32.h>
-
-#include "std_msgs/MultiArrayLayout.h"
-#include "std_msgs/MultiArrayDimension.h"
-
-#include "std_msgs/Float32MultiArray.h"
 #include <math.h>
 
 #include <boost/scoped_ptr.hpp>
@@ -93,8 +87,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "manip");
   ros::NodeHandle n;
 
-  //ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-  ros::Publisher chatter_pub = n.advertise<std_msgs::Float32MultiArray>("Topic_Array", 100);
+  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
 
   ros::Rate loop_rate(10);
  
@@ -182,13 +175,46 @@ int main(int argc, char **argv)
   obj1.manip(J);
   cout << "Manipuilability: " << obj1.manip(J) << endl;
 
+  // int m = 20; 
+  // MatrixXf jointpos(nj, m);
+
+  // for (unsigned int i = 0 ; i < nj ; i++)
+  //   {
+  //     for (unsigned int j = 0 ; j < m ; j++){
+  //       jointpos(i,j) = -M_PI/2 + j * M_PI/m;
+  //     }
+  //   }
+
+  // for (unsigned int i = 0 ; i < nj ; i++)
+  //   {
+  //     for (unsigned int j = 0 ; j < m ; j++){
+  //       for (unsigned int j = 0 ; j < m ; j++){
+  //       for (unsigned int j = 0 ; j < m ; j++){
+  //       for (unsigned int j = 0 ; j < m ; j++){
+  //       for (unsigned int j = 0 ; j < m ; j++){
+  //       for (unsigned int j = 0 ; j < m ; j++){
+  //       for (unsigned int j = 0 ; j < m ; j++){
+  //         jointpos(i,j) = -M_PI/2 + j * M_PI/m;
+  //       }}}}}}}
+  //   }
+  // std::cout << "\n  jointpositions  = \n"<< jointpos <<std::endl;
 
 
   MatrixXd JJ_T =   J.data * J.data.transpose();
 
   EigenSolver<MatrixXd> es(JJ_T);
 
+  /*
+  std::cout << "\n  J J'  = \n"<< JJ_T<<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvectors() <<std::endl;
+  std::cout << "\n EigenValue  = \n"<< es.eigenvalues() <<std::endl;
+  */
 
+
+// Create solver based on kinematic chain
+// ChainFkSolverPos_recursive fk_solver = ChainFkSolverPos_recursive(chain);
+//Creation of the solvers:
+//Chain chain1;
 ChainFkSolverPos_recursive fksolver1(chain);//Forward position solver
 ChainIkSolverVel_pinv iksolver1v(chain);//Inverse velocity solver
 ChainIkSolverPos_NR iksolver1(chain,fksolver1,iksolver1v,100,1e-6);//Maximum 100 iterations, stop at accuracy 1e-6
@@ -214,40 +240,23 @@ for(unsigned int i=0;i<nj;i++){
 }
 
 
-KDL::Frame position1;
-fksolver1.JntToCart(jointpositions,position1);
-std::cout << "\n position1  = \n"<< position1<<std::endl;
-std::cout << "\n q  = \n"<< q(0,3) <<std::endl;
+// KDL::ChainIkSolverPos_NR_JL ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, fk_solver, vik_solver, int num_iterations, double error);
 
-  while (ros::ok())
-  {
-    std_msgs::Float32MultiArray array;
-    //Clear array
-    array.data.clear();
-    //for loop, pushing data in the size of the array
-    for (int i = 0; i < chain.getNrOfJoints(); i++)
-    {
-      //assign array a random number between 0 and 255.
-      //array.data.push_back( (rand() % 255) + 0.1 );
-      array.data.push_back(q.operator()(i));
-    }
-    //Publish array
-    chatter_pub.publish(array);
-    //Let the world know
-    ROS_INFO("I published something!");
-    std::cout << "I received = " << std::endl << array<< std::endl;
-    //Do this.
-    ros::spinOnce();
-    //Added a delay so not to spam
-    sleep(2);
-  }
+// TRAC_IK::TRAC_IK ik_solver(Chain chain1, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_secs=0.005, double error=1e-5, TRAC_IK::SolveType type=TRAC_IK::Speed);  
 
-  //std::cout << "\n This is TEST = \n"<<mat.data[0] << ", "<<mat.data[1]<<", "<<mat.data[2]<<", "<<mat.data[3]<<", "<<mat.data[4]<<", "<<mat.data[5]<<", "<<mat.data[6]<< std::endl;
+//TRAC_IK::TRAC_IK ik_solver(string arm_base_link, string arm_ee_link, string URDF_param="robot_desc_string", double timeout_in_secs=0.005, double error=1e-5, TRAC_IK::SolveType type=TRAC_IK::Speed);
+  // ik_solver.SetSolveType (SolveType _type)
+// int rc = ik_solver.CartToJnt(KDL::JntArray joint_seed = jointpositions, KDL::Frame desired_end_effector_pose = [.5 0 0 0 0 0 1], KDL::JntArray& return_joints);
+  KDL::Frame position1;
+  fksolver1.JntToCart(jointpositions,position1);
+  std::cout << "\n position1  = \n"<< position1<<std::endl;
+  std::cout << "\n q  = \n"<< q(0,3) <<std::endl;
+
+
+  
 
   int count = 0;
-  //chatter_pub.publish(mat);
 
-/*
   while (ros::ok())
   {
     std_msgs::String msg;
@@ -266,7 +275,7 @@ std::cout << "\n q  = \n"<< q(0,3) <<std::endl;
     loop_rate.sleep();
     ++count;
   }
-*/
+
 
   return 0;
 }

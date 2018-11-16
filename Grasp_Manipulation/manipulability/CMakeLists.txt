@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  message_generation
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -55,11 +57,12 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
+ add_service_files(
+   FILES
+   Man_service.srv
+   AddTwoInt.srv
 #   Service2.srv
-# )
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -69,10 +72,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+   geometry_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -203,3 +207,41 @@ include_directories(
 add_executable(manip src/manip.cpp)
 target_link_libraries(manip ${catkin_LIBRARIES})
 add_dependencies(manip manip_generate_messages_cpp)
+
+
+
+add_executable(matrix_receiver src/matrix_receiver.cpp)
+target_link_libraries(matrix_receiver ${catkin_LIBRARIES})
+add_dependencies(matrix_receiver mreceiver_generate_messages_cpp)
+
+
+
+add_executable(sample_publiush src/sample_publiush.cpp)
+target_link_libraries(sample_publiush ${catkin_LIBRARIES})
+add_dependencies(sample_publiush sample_publiush_generate_messages_cpp)
+
+
+
+
+
+
+
+add_executable(sample_listener src/sample_listener.cpp)
+target_link_libraries(sample_listener ${catkin_LIBRARIES})
+add_dependencies(sample_listener sample_listener_generate_messages_cpp)
+
+
+
+add_executable(init_exp_manip src/init_exp_manip.cpp)
+target_link_libraries(init_exp_manip ${catkin_LIBRARIES})
+add_dependencies(init_exp_manip init_exp_manip_generate_messages_cpp)
+
+
+
+add_executable(manipulability_server src/manipulability_server.cpp)
+target_link_libraries(manipulability_server ${catkin_LIBRARIES})
+add_dependencies(manipulability_server manipulability_gencpp)
+
+add_executable(manipulability_client src/manipulability_client.cpp)
+target_link_libraries(manipulability_client ${catkin_LIBRARIES})
+add_dependencies(manipulability_client manipulability_gencpp)
